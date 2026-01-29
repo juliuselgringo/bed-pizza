@@ -22,33 +22,31 @@ document.querySelectorAll('.estate-actions').forEach(actions => {
         e.preventDefault();
     });
 });
-// Ajouter la recherche avec la touche Entrée
-document.addEventListener('DOMContentLoaded', function(e) {
-    e.preventDefault();
-    e.stopPropagation();
-    const searchInput = document.getElementById('searchUserId');
-    if (searchInput) {
-        searchInput.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                searchUser();}
-        });
-    }
-});
 
 function getContextPath() {
     return document.body.getAttribute('data-context-path') || '';}
 
-/*/ Ajouter support de la touche Entrée
+// Ajouter support de la touche Entrée
 document.addEventListener('DOMContentLoaded', function() {
+    e.preventDefault();
+    e.stopPropagation();
     const searchInput = document.getElementById('searchEstateId');
+    const searchInput2 = document.getElementById('searchUserIdId');
     if (searchInput) {
         searchInput.addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
-                searchEstate();
+                searchEstate3();
             }
         });
     }
-});*/
+    if (searchInput2) {
+        searchInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchUser2();
+            }
+        });
+    }
+});
 
 // FIX: Fonction utilitaire pour échapper le HTML
 function escapeHtml(text) {
@@ -78,16 +76,14 @@ async function searchUser() {
 async function searchUser2() {
     const searchInput = document.getElementById('searchUserId');
     const UserId = searchInput.value.trim();
-
     if (!UserId) { alert('Veuillez entrer un ID de user');
         return; }
-
     if (isNaN(UserId) || UserId <= 0) {
         alert('Veuillez entrer un ID valide (nombre positif)');
         return;}
     try {
         // Fetch la page HTML complète
-        const response = await fetch(window.contextPath + '/user-servlet?actionUser=researchUser&idUser=' + UserId);
+        const response = await fetch(getContextPath() + '/user-servlet?actionUser=researchUser&idUser=' + UserId);
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);}
 
@@ -256,7 +252,7 @@ async function searchEstate3() {
 
     try {
         // Fetch la page HTML complète
-        const response = await fetch(window.contextPath + '/EstateServlet?action=searchEstate&idEstate=' + estateId);
+        const response = await fetch(getContextPath() + '/EstateServlet?action=searchEstate&idEstate=' + estateId);
 
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
@@ -311,9 +307,13 @@ async function deleteEstateAdmin(estateId, event) {
     }
 }
 function editEstate(estateId) {
-    window.location.href =  window.contextPath + "/EstateServlet?action=edit&idEstate=" + estateId;
+    //if (event) {
+     //   event.stopPropagation();
+    //    event.preventDefault();
+        //comment because defined in onclick button
+        window.location.href = getContextPath() + "/EstateServlet?action=edit&idEstate=" + estateId;
+   // }
 }
-
 //hostList
 async function deleteEstate(estateId) {
     if (confirm('Êtes-vous sûr de vouloir supprimer ce logement ?')) {
@@ -385,7 +385,7 @@ async function toggleEstateStatus(estateId, currentStatus) {
 
         if (response.ok) {
             alert('Statut du logement modifié avec succès');
-            searchEstate(); // Refresh results
+            searchEstate3(); // Refresh results
         } else {
             alert('Erreur lors de la modification du statut');
         }
@@ -404,7 +404,7 @@ async function toggleUserStatus(userId, currentStatus) {
 
         if (response.ok) {
             alert('Statut de l\'utilisateur modifié avec succès');
-            searchUser(); // Refresh results
+            searchUser2(); // Refresh results
         } else {
             alert('Erreur lors de la modification du statut');
         }
